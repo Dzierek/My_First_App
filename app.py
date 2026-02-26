@@ -5,7 +5,7 @@ app = Flask(__name__)
 
 @app.route("/")
 def hello():
-    return "Hello DevOps - deployment works!"
+    return "Hello DevOps - deployment works again!	"
 
 @app.route("/write")
 def write_file():
