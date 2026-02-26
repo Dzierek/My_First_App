@@ -7,7 +7,7 @@ pkill -f "gunicorn.*5000" || echo "Brak procesów gunicorn na porcie 5000" # Zab
 
 # Uruchom aplikację przez gunicorn jako ec2-user (nie root)
 # Używamy pip zainstalowanego dla użytkownika
-nohup /home/ec2-user/.local/bin/gunicorn -w 2 -b 0.0.0.0:5000 app:app > app.log 2>&1 &
+/usr/local/bin/gunicorn -w 2 -b 0.0.0.0:5000 app:app > app.log 2>&1 &
 
 echo $! > /home/ec2-user/app/gunicorn.pid # Zapisz PID
 sleep 5 # Daj czas na start
