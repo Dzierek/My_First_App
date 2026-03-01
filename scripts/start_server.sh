@@ -5,6 +5,9 @@ echo "=== ApplicationStart: Uruchamianie kontenerów ==="
 ACCOUNT_ID=$(curl -s http://169.254.169.254/latest/meta-data/identity-credentials/ec2/info | grep -oP '(?<=AccountId\":\")[^\"]+')
 REGION="us-east-1"
 
+# Logowanie do ECR 
+aws ecr get-login-password --region $REGION | docker login --username AWS --password-stdin $ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com
+
 # Zatrzymaj i usuń stare kontenery
 docker stop first-app second-app 2>/dev/null || true
 docker rm first-app second-app 2>/dev/null || true
