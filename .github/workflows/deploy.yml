@@ -57,7 +57,7 @@ jobs:
           # Uruchom pierwszy kontener
           docker stop first-app || true
           docker rm first-app || true
-          docker run -d --name first-app -p 5000:5000 $FIRST_IMAGE
+          docker run -d --name first-app -p 5002:5000 $FIRST_IMAGE
           
           # Uruchom drugi kontener
           docker stop second-app || true
