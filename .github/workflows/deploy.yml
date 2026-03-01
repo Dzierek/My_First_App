@@ -57,12 +57,12 @@ jobs:
           # Uruchom pierwszy kontener
           docker stop first-app || true
           docker rm first-app || true
-          docker run -d --name first-app -p 5002:5000 $FIRST_IMAGE
+          docker run -d --name first-app -p 5001:5000 $FIRST_IMAGE
           
           # Uruchom drugi kontener
           docker stop second-app || true
           docker rm second-app || true
-          docker run -d --name second-app -p 5001:5000 $SECOND_IMAGE
+          docker run -d --name second-app -p 5002:5000 $SECOND_IMAGE
           
           # Sprawdź czy działają
           docker ps
