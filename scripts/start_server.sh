@@ -1,31 +1,33 @@
 #!/bin/bash
 set -e
-echo "=== ApplicationStart: Uruchamianie aplikacji ==="
-cd /home/ec2-user/app
+echo "=== ApplicationStart: Uruchamianie kontenerów ==="
 
-pkill -f "gunicorn.*5000" || echo "Brak procesów gunicorn na porcie 5000" # Zabij istniejące procesy na porcie 5000 (tylko gunicorn)
+ACCOUNT_ID=$(curl -s http://169.254.169.254/latest/meta-data/identity-credentials/ec2/info | grep -oP '(?<=AccountId\":\")[^\"]+')
+REGION="us-east-1"
 
-# Uruchom aplikację przez gunicorn jako ec2-user (nie root)
-# Używamy pip zainstalowanego dla użytkownika
-/usr/local/bin/gunicorn -w 2 -b 0.0.0.0:5000 app:app > app.log 2>&1 &
+# Zatrzymaj i usuń stare kontenery
+docker stop first-app second-app 2>/dev/null || true
+docker rm first-app second-app 2>/dev/null || true
 
-echo $! > /home/ec2-user/app/gunicorn.pid # Zapisz PID
-sleep 5 # Daj czas na start
+# Pobierz najnowsze obrazy
+docker pull $ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com/my-first-app:latest
+docker pull $ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com/my-second-app:latest
 
-# Sprawdź czy proces żyje
-if ps -p $(cat /home/ec2-user/app/gunicorn.pid) > /dev/null; then
-    echo "✅ Aplikacja uruchomiona pomyślnie na porcie 5000"
-    echo "Logi: /home/ec2-user/app/app.log"
-else
-    echo "❌ Błąd: Aplikacja nie wystartowała!"
-    echo "Sprawdź logi: /home/ec2-user/app/app.log"
-    exit 1
-fi
+# Uruchom kontenery
+docker run -d \
+  --name first-app \
+  -p 5000:5000 \
+  --restart always \
+  $ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com/my-first-app:latest
+
+docker run -d \
+  --name second-app \
+  -p 5001:5000 \
+  --restart always \
+  $ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com/my-second-app:latest
+
+# Sprawdź czy działają
+sleep 3
+docker ps
 
 echo "=== ApplicationStart zakończony ==="
-#sudo yum update -y
-#sudo yum install python3 python3-pip -y
-#sudo pip3 install flask
-#cd /home/ec2-user/app
-#pkill -f gunicorn || true
-#nohup gunicorn -w 2 -b 0.0.0.0:5000 app:app &
