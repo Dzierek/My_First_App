@@ -5,7 +5,7 @@ app = Flask(__name__)
 
 @app.route("/")
 def hello():
-    return "Hello DevOps Cierek - first app!!" \
+    return "Hello DevOps Cierek - first app Wiktor!!" \
 
 @app.route("/write")
 def write_file():
